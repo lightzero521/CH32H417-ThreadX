@@ -1,0 +1,11 @@
+D:\lightzero\project\CH32H417-ThreadX\CH32H417-ThreadX.wvsln:
+BuildOrder=CH32H417-ThreadX_V3F,CH32H417-ThreadX_V5F
+-arm:${eclipse_home}\toolchain\arm-none-eabi-gcc\bin
+-build:${eclipse_home}\toolchain\Build Tools\bin
+-openocd name:openocd.exe
+-openocd path:${eclipse_home}\toolchain\OpenOCD\bin
+-rv:${eclipse_home}\toolchain\RISC-V Embedded GCC\bin
+D:\lightzero\project\CH32H417-ThreadX\V3F
+..\V3F
+D:\lightzero\project\CH32H417-ThreadX\V5F
+..\V5F

@@ -1,0 +1,18 @@
+# MRS / GCC build output
+V3F/obj/
+V5F/obj/
+*.o
+*.d
+*.elf
+*.hex
+*.bin
+*.map
+*.lst
+*.siz
+
+# Local IDE / debug
+.mrs/
+.settings/
+*.launch
+*.su
+*.user
