@@ -6,21 +6,17 @@
 * Description        : Main Interrupt Service Routines.
 *********************************************************************************
 * Copyright (c) 2025 Nanjing Qinheng Microelectronics Co., Ltd.
-* Attention: This software (modified or not) and binary are used for 
-* microcontroller manufactured by Nanjing Qinheng Microelectronics.
+* Attention: This software (modified or not) and binary are used for
+    microcontroller manufactured by Nanjing Qinheng Microelectronics.
 *******************************************************************************/
 #include "ch32h417_it.h"
+#include "debug.h"
+#include "tx_demo.h"
 
 void NMI_Handler(void) __attribute__((interrupt));
 void HardFault_Handler(void) __attribute__((interrupt));
+void TIM7_IRQHandler(void) __attribute__((interrupt));
 
-/*********************************************************************
- * @fn      NMI_Handler
- *
- * @brief   This function handles NMI exception.
- *
- * @return  none
- */
 void NMI_Handler(void)
 {
   while (1)
@@ -28,19 +24,18 @@ void NMI_Handler(void)
   }
 }
 
-/*********************************************************************
- * @fn      HardFault_Handler
- *
- * @brief   This function handles Hard Fault exception.
- *
- * @return  none
- */
 void HardFault_Handler(void)
 {
-  NVIC_SystemReset();
+  printf("V5F HardFault mcause=0x%08lx mepc=0x%08lx mtval=0x%08lx\r\n",
+         (unsigned long)__get_MCAUSE(),
+         (unsigned long)__get_MEPC(),
+         (unsigned long)__get_MTVAL());
   while (1)
   {
   }
 }
 
-
+void TIM7_IRQHandler(void)
+{
+    tx_demo_tim7_isr();
+}

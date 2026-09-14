@@ -1,14 +1,15 @@
 /**************************************************************************/
-/*  SysTick0_Handler — ThreadX tick wrapper (no WCH-Interrupt-fast/HPE)   */
+/*  SysTick1_Handler — ThreadX tick wrapper (software stack, then mret)   */
+/*  V5F tick is SysTick1; compare flag is SysTick0->ISR bit1.             */
 /**************************************************************************/
 
 #include "tx_qke_v5f.h"
 
     .section .text
     .align  2
-    .global SysTick0_Handler
-    .type   SysTick0_Handler, @function
-SysTick0_Handler:
+    .global SysTick1_Handler
+    .type   SysTick1_Handler, @function
+SysTick1_Handler:
 #if defined(__riscv_float_abi_single) || defined(__riscv_float_abi_double)
     addi    sp, sp, -65*4
 #else
@@ -18,7 +19,11 @@ SysTick0_Handler:
     call    _tx_thread_context_save
 
     li      t0, SYSTICK0_BASE
-    sw      zero, 4(t0)
+    lw      t1, 4(t0)
+    li      t2, 2
+    not     t2, t2
+    and     t1, t1, t2
+    sw      t1, 4(t0)
 
     call    _tx_timer_interrupt
     j       _tx_thread_context_restore

@@ -107,7 +107,29 @@ typedef unsigned short                          USHORT;
 
 #ifndef __ASSEMBLER__
 UINT  _tx_thread_interrupt_control(UINT new_posture);
+VOID  _tx_v5f_systick_start(VOID);
+VOID  _tx_v5f_wfi(VOID);
+ULONG _tx_v5f_irq_active(VOID);
+extern ULONG _tx_v5f_in_isr;
 #endif
+
+/* Like Cortex-M IPSR: a C peripheral ISR is still "in the kernel"
+   even when _tx_thread_system_state is 0. */
+#ifndef TX_THREAD_GET_SYSTEM_STATE
+#define TX_THREAD_GET_SYSTEM_STATE() \
+    (_tx_thread_system_state | _tx_v5f_irq_active())
+#endif
+
+/* Cortex-M port: only preempt-disable gates _tx_thread_system_return.
+   From a C ISR that return just pends Software_IRQn (PendSV). */
+#ifndef TX_THREAD_SYSTEM_RETURN_CHECK
+#define TX_THREAD_SYSTEM_RETURN_CHECK(c) \
+    (c) = ((ULONG) _tx_thread_preempt_disable);
+#endif
+
+/* Hold off solicited switches until _tx_thread_schedule starts. */
+#define TX_PORT_SPECIFIC_POST_INITIALIZATION            _tx_thread_preempt_disable++;
+#define TX_PORT_SPECIFIC_PRE_SCHEDULER_INITIALIZATION   _tx_v5f_systick_start();
 
 #define TX_INTERRUPT_SAVE_AREA                  register UINT interrupt_save;
 

@@ -24,27 +24,27 @@
     <link>
       <name>Core</name>
       <type>2</type>
-      <locationURI>PARENT-1-PROJECT_LOC/Common/Core</locationURI>
+      <location>PARENT-1-PROJECT_LOC/Common/Core</location>
     </link>
     <link>
       <name>Debug</name>
       <type>2</type>
-      <locationURI>PARENT-1-PROJECT_LOC/Common/Debug</locationURI>
+      <location>PARENT-1-PROJECT_LOC/Common/Debug</location>
     </link>
     <link>
       <name>Peripheral</name>
       <type>2</type>
-      <locationURI>PARENT-1-PROJECT_LOC/Common/Peripheral</locationURI>
+      <location>PARENT-1-PROJECT_LOC/Common/Peripheral</location>
     </link>
     <link>
       <name>Startup</name>
       <type>2</type>
-      <locationURI>PARENT-1-PROJECT_LOC/Common/Startup</locationURI>
+      <location>PARENT-1-PROJECT_LOC/Common/Startup</location>
     </link>
     <link>
       <name>Common</name>
       <type>2</type>
-      <locationURI>PARENT-1-PROJECT_LOC/Common/Common</locationURI>
+      <location>PARENT-1-PROJECT_LOC/Common/Common</location>
     </link>
   </linkedResources>
   <filteredResources>

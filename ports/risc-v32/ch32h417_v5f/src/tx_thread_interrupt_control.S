@@ -18,13 +18,11 @@ _tx_thread_interrupt_control:
 
     li      t0, GINTENR_IE
     csrs    CSR_GINTENR, t0
-    csrsi   mstatus, 0x08
     j       _tx_thread_interrupt_control_exit
 
 _tx_thread_interrupt_disable:
     li      t0, GINTENR_IE
     csrc    CSR_GINTENR, t0
-    csrci   mstatus, 0x08
     fence.i
 
 _tx_thread_interrupt_control_exit:

@@ -12,7 +12,6 @@ _tx_thread_context_restore:
 
     li      t0, GINTENR_IE
     csrc    CSR_GINTENR, t0
-    csrci   mstatus, 0x08
     fence.i
 
 #ifdef TX_ENABLE_EXECUTION_CHANGE_NOTIFY
@@ -106,8 +105,15 @@ _tx_thread_dont_save_ts:
     la      t0, _tx_thread_current_ptr
     sw      x0, 0(t0)
 
+    /* Already on the system stack; retire PFIC then enter the scheduler. */
+    la      t0, _tx_v5f_in_isr
+    sw      zero, 0(t0)
+    la      t0, _tx_thread_schedule
+    csrw    mepc, t0
+    mret
+
 _tx_thread_idle_system_restore:
-    j       _tx_thread_schedule
+    j       _tx_thread_interrupt_return
 
 _tx_thread_interrupt_return:
 #if defined(__riscv_float_abi_single) || defined(__riscv_float_abi_double)
@@ -165,19 +171,8 @@ _tx_thread_interrupt_return:
 #endif
 _tx_thread_irq_skip_fp:
 
-    lw      t0, 30*4(sp)
-    csrw    mepc, t0
-
-    csrr    t1, mstatus
-    li      t3, 0x1880
-    li      t4, ~0x1888
-    and     t1, t1, t4
-    or      t1, t1, t3
-#if defined(__riscv_float_abi_single) || defined(__riscv_float_abi_double)
-    li      t0, 0x2000
-    or      t1, t1, t0
-#endif
-    csrw    mstatus, t1
+    la      t0, _tx_v5f_in_isr
+    sw      zero, 0(t0)
 
     li      t0, GINTENR_IE
     csrs    CSR_GINTENR, t0

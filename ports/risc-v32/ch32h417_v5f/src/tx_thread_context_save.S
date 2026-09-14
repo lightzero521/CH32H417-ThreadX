@@ -18,6 +18,10 @@ _tx_thread_context_save:
     li      t0, 1
     bgt     t1, t0, _tx_thread_nested_save
 
+    la      t0, _tx_v5f_in_isr
+    li      t1, 1
+    sw      t1, 0(t0)
+
     sw      t2, 17*4(sp)
     sw      s0, 12*4(sp)
     sw      a0, 27*4(sp)
@@ -191,9 +195,6 @@ _tx_thread_idle_system_save:
 #ifdef TX_ENABLE_EXECUTION_CHANGE_NOTIFY
     call    _tx_execution_isr_enter
 #endif
-#if defined(__riscv_float_abi_single) || defined(__riscv_float_abi_double)
-    addi    sp, sp, 65*4
-#else
-    addi    sp, sp, 32*4
-#endif
+    /* Keep the ISR frame on the system stack and mret back to the
+       scheduler idle loop. Jumping to schedule without mret wedges PFIC. */
     ret

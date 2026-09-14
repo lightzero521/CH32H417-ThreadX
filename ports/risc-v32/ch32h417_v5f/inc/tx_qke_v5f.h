@@ -3,9 +3,13 @@
 /*  QingKe V5F (CH32H417) helpers for the ThreadX port                    */
 /*                                                                        */
 /*  V5F is not a standard RV32 CLINT/PLIC core:                           */
-/*    - Global IRQ mask is CSR 0x800 (GINTENR), not only mstatus.MIE      */
+/*    - Global IRQ mask is CSR 0x800 (GINTENR), matching WCH HAL          */
+/*    - Thread-mode mstatus CSR ops are illegal (csrci/csrw both trap)    */
+/*    - Startup writes 0x6088 then mret; do not write MPP 0x1880/0x1888   */
 /*    - PFIC + optional HPE (INTSYSCR 0x804)                              */
-/*    - Tick source is memory-mapped SysTick0, not mtime                  */
+/*    - Tick is SysTick1 @ HCLKClock; flag is SysTick0->ISR bit1          */
+/*    - ISR must always leave via mret; jumping to schedule wedges PFIC   */
+/*    - C peripheral ISRs pend Software_IRQn (PendSV); SW_Handler switches  */
 /*                                                                        */
 /*  Same approach as Zephyr's WCH/QingKe support: software stacking and   */
 /*  always return from a switch via mret so PFIC interrupt level is       */

@@ -1,6 +1,7 @@
 /**************************************************************************/
-/*  _tx_thread_schedule — both interrupt and solicited frames use mret    */
-/*  so QingKe PFIC always retires the current interrupt level.            */
+/*  _tx_thread_schedule                                                   */
+/*  Always entered in thread mode. Solicited: ret. IRQ frame: jr mepc.    */
+/*  ISR paths must mret here; never mret from this function.              */
 /**************************************************************************/
 
 #include "tx_qke_v5f.h"
@@ -11,23 +12,25 @@
     .type   _tx_thread_schedule, @function
 _tx_thread_schedule:
 
+    /* Match Cortex-M: POST_INITIALIZATION held this at 1. */
+    la      t0, _tx_thread_preempt_disable
+    sw      zero, 0(t0)
+
     li      t0, GINTENR_IE
     csrs    CSR_GINTENR, t0
-    csrsi   mstatus, 0x08
 
 _tx_thread_schedule_loop:
     la      t0, _tx_thread_execute_ptr
     lw      t1, 0(t0)
     bnez    t1, _tx_thread_ready_to_run
 #ifndef TX_NO_WFI
-    wfi
+    call    _tx_v5f_wfi
 #endif
     j       _tx_thread_schedule_loop
 
 _tx_thread_ready_to_run:
     li      t2, GINTENR_IE
     csrc    CSR_GINTENR, t2
-    csrci   mstatus, 0x08
     fence.i
 
     lw      t1, 0(t0)
@@ -132,22 +135,13 @@ _tx_thread_ready_to_run:
 _tx_thread_schedule_skip_fp:
 #endif
 
-    lw      t0, 30*4(sp)
-    csrw    mepc, t0
-
-    li      t0, 0x1880
-#if defined(__riscv_float_abi_single) || defined(__riscv_float_abi_double)
-    li      t1, 0x2000
-    or      t0, t0, t1
-#endif
-    csrw    mstatus, t0
-
-    li      t0, GINTENR_IE
-    csrs    CSR_GINTENR, t0
-
+    /* Thread-mode resume of an interrupt frame: jr, never mret/csrw mepc.
+       t1 is the jump register (QingKe cannot csrw mepc here). */
+    li      t2, GINTENR_IE
+    csrs    CSR_GINTENR, t2
+    lw      t1, 30*4(sp)
     lw      ra, 28*4(sp)
     lw      t0, 19*4(sp)
-    lw      t1, 18*4(sp)
     lw      t2, 17*4(sp)
     lw      s0, 12*4(sp)
     lw      x9, 11*4(sp)
@@ -173,13 +167,12 @@ _tx_thread_schedule_skip_fp:
     lw      x25, 3*4(sp)
     lw      x26, 2*4(sp)
     lw      x27, 1*4(sp)
-
 #if defined(__riscv_float_abi_single) || defined(__riscv_float_abi_double)
     addi    sp, sp, 65*4
 #else
     addi    sp, sp, 32*4
 #endif
-    mret
+    jr      t1
 
 _tx_thread_solicited_return:
 #if defined(__riscv_float_abi_single) || defined(__riscv_float_abi_double)
@@ -221,17 +214,6 @@ _tx_thread_solicited_return:
 _tx_thread_schedule_solicited_skip_fp:
 #endif
 
-    /* Always mret: put saved ra into mepc so PFIC level is retired. */
-    lw      t0, 13*4(sp)
-    csrw    mepc, t0
-
-    li      t0, 0x1880
-#if defined(__riscv_float_abi_single) || defined(__riscv_float_abi_double)
-    li      t1, 0x2000
-    or      t0, t0, t1
-#endif
-    csrw    mstatus, t0
-
     li      t0, GINTENR_IE
     csrs    CSR_GINTENR, t0
 
@@ -254,4 +236,4 @@ _tx_thread_schedule_solicited_skip_fp:
 #else
     addi    sp, sp, 16*4
 #endif
-    mret
+    ret
