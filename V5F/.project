@@ -49,12 +49,12 @@
     <link>
       <name>ThreadX</name>
       <type>2</type>
-      <location>PARENT-1-PROJECT_LOC/threadx/common</location>
+      <location>PARENT-1-PROJECT_LOC/threadx</location>
     </link>
     <link>
-      <name>ThreadX_port</name>
+      <name>platform</name>
       <type>2</type>
-      <location>PARENT-1-PROJECT_LOC/ports/risc-v32/ch32h417_v5f</location>
+      <location>PARENT-1-PROJECT_LOC/platform</location>
     </link>
   </linkedResources>
   <filteredResources>
@@ -64,6 +64,14 @@
       <matcher>
         <id>org.eclipse.ui.ide.multiFilter</id>
         <arguments>1.0-name-matches-false-false-*.wvproj</arguments>
+      </matcher>
+    </filter>
+    <filter>
+      <name/>
+      <type>10</type>
+      <matcher>
+        <id>org.eclipse.ui.ide.multiFilter</id>
+        <arguments>1.0-name-matches-false-false-platform2</arguments>
       </matcher>
     </filter>
   </filteredResources>

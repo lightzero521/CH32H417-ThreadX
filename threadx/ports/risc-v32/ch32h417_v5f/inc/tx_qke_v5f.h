@@ -10,6 +10,7 @@
 /*    - Tick is SysTick1 @ HCLKClock; flag is SysTick0->ISR bit1          */
 /*    - ISR must always leave via mret; jumping to schedule wedges PFIC   */
 /*    - C peripheral ISRs pend Software_IRQn (PendSV); SW_Handler switches  */
+/*    - FPU is single-precision F only (ilp32f). ilp32d / D is #error'd     */
 /*                                                                        */
 /*  Same approach as Zephyr's WCH/QingKe support: software stacking and   */
 /*  always return from a switch via mret so PFIC interrupt level is       */
@@ -19,6 +20,10 @@
 
 #ifndef TX_QKE_V5F_H
 #define TX_QKE_V5F_H
+
+#if defined(__riscv_float_abi_double) || (defined(__riscv_flen) && (__riscv_flen == 64))
+#error "QingKe V5F has single-precision F only (no D). Use ilp32f, not ilp32d."
+#endif
 
 #define CSR_GINTENR                 0x800
 #define GINTENR_IE                  0x88

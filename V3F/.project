@@ -46,6 +46,11 @@
       <type>2</type>
       <location>PARENT-1-PROJECT_LOC/Common/Common</location>
     </link>
+    <link>
+      <name>platform</name>
+      <type>2</type>
+      <location>PARENT-1-PROJECT_LOC/platform</location>
+    </link>
   </linkedResources>
   <filteredResources>
     <filter>

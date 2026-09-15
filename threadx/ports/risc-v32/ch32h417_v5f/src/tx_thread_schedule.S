@@ -135,8 +135,8 @@ _tx_thread_ready_to_run:
 _tx_thread_schedule_skip_fp:
 #endif
 
-    /* Thread-mode resume of an interrupt frame: jr, never mret/csrw mepc.
-       t1 is the jump register (QingKe cannot csrw mepc here). */
+    /* Idle / first-start only. Preempt switches mret the new thread from
+       SW_Handler so t1 is restored. QingKe cannot csrw mepc here. */
     li      t2, GINTENR_IE
     csrs    CSR_GINTENR, t2
     lw      t1, 30*4(sp)
@@ -168,7 +168,7 @@ _tx_thread_schedule_skip_fp:
     lw      x26, 2*4(sp)
     lw      x27, 1*4(sp)
 #if defined(__riscv_float_abi_single) || defined(__riscv_float_abi_double)
-    addi    sp, sp, 65*4
+    addi    sp, sp, 64*4
 #else
     addi    sp, sp, 32*4
 #endif

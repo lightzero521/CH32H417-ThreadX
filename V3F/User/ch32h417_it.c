@@ -37,7 +37,8 @@ void NMI_Handler(void)
  */
 void HardFault_Handler(void)
 {
-  NVIC_SystemReset();
+  /* Do not NVIC_SystemReset: that reboots V5F as well and looks like a
+     ThreadX reset loop. Hang here so the V5F log can be read. */
   while (1)
   {
   }

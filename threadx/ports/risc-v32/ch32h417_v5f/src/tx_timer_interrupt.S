@@ -2,6 +2,8 @@
 /*  _tx_timer_interrupt — same algorithm as official RISC-V32 GNU port    */
 /**************************************************************************/
 
+#include "tx_qke_v5f.h"
+
     .section .text
     .align  2
     .global _tx_timer_interrupt

@@ -3,6 +3,8 @@
 /*  QingKe PFIC HardFaults if we mret from thread mode.                   */
 /**************************************************************************/
 
+#include "tx_qke_v5f.h"
+
     .section .text
     .align  2
     .global _tx_thread_stack_build

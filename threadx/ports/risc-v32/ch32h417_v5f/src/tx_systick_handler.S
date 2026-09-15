@@ -10,8 +10,9 @@
     .global SysTick1_Handler
     .type   SysTick1_Handler, @function
 SysTick1_Handler:
+    /* 64 words = 256 bytes so SP stays 16-byte aligned for C calls. */
 #if defined(__riscv_float_abi_single) || defined(__riscv_float_abi_double)
-    addi    sp, sp, -65*4
+    addi    sp, sp, -64*4
 #else
     addi    sp, sp, -32*4
 #endif

@@ -1,0 +1,23 @@
+# CH32H417 I2C/SPI Pin Mux
+
+工程 `inst 0` 起依次对应硬件 `I2C1/SPI1`。I2C 需要外部上拉；SPI 的 NSS/CS 由上层使用 GPIO 控制。
+
+## I2C
+
+| inst | SCL | SDA |
+|---:|---|---|
+| 0 | PB6(AF4), PB8(AF4) | PB7(AF4), PB9(AF4) |
+| 1 | PC0(AF9), PB10(AF4) | PC1(AF9), PB11(AF4) |
+| 2 | PA8(AF4), PA14(AF7) | PC9(AF4), PA13(AF7) |
+| 3 | PD12(AF4), PF12(AF2), PB6(AF6), PB8(AF6) | PD13(AF4), PF13(AF2), PB7(AF6), PB9(AF6) |
+
+## SPI
+
+| inst | SCK | MOSI | MISO |
+|---:|---|---|---|
+| 0 | PA5(AF5), PB3(AF5), PF5(AF5), PF7(AF3) | PA7(AF5), PB5(AF5), PD7(AF5), PF8(AF3) | PA6(AF5), PB4(AF5), PF3(AF5), PF9(AF3) |
+| 1 | PB13(AF5), PB10(AF5), PA9(AF5), PA12(AF5), PD3(AF5) | PB15(AF5), PC1(AF5), PC3(AF5) | PB14(AF5), PC2(AF5) |
+| 2 | PB3(AF6), PC10(AF6), PA14(AF1) | PB2(AF7), PB5(AF7), PC12(AF6), PD6(AF5), PA13(AF1) | PB4(AF6), PC11(AF6), PC9(AF5) |
+| 3 | PE2(AF5), PE12(AF5) | PE6(AF5), PE14(AF5) | PE5(AF5), PE13(AF5) |
+
+来源：`CH32H417DS0.PDF` V1.8，表 2-2-6、表 2-2-8。

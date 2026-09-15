@@ -11,11 +11,9 @@
 *******************************************************************************/
 #include "ch32h417_it.h"
 #include "debug.h"
-#include "tx_demo.h"
 
 void NMI_Handler(void) __attribute__((interrupt));
 void HardFault_Handler(void) __attribute__((interrupt));
-void TIM7_IRQHandler(void) __attribute__((interrupt));
 
 void NMI_Handler(void)
 {
@@ -33,9 +31,4 @@ void HardFault_Handler(void)
   while (1)
   {
   }
-}
-
-void TIM7_IRQHandler(void)
-{
-    tx_demo_tim7_isr();
 }

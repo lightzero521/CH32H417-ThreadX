@@ -11,20 +11,17 @@
  *******************************************************************************/
 
 #include "debug.h"
+#include "ch32h417_rcc.h"
 #include "tx_api.h"
 #include "tx_demo.h"
 
 #define DEMO_STACK_SIZE     2048
 #define CTX_ROUNDS          64
 
-static TX_THREAD thread_led;
-static TX_THREAD thread_tick;
 static TX_THREAD thread_ctx_a;
 static TX_THREAD thread_ctx_b;
 static TX_THREAD thread_preempt_hi;
 static TX_THREAD thread_preempt_lo;
-static UCHAR     thread_led_stack[DEMO_STACK_SIZE];
-static UCHAR     thread_tick_stack[DEMO_STACK_SIZE];
 static UCHAR     thread_ctx_a_stack[DEMO_STACK_SIZE];
 static UCHAR     thread_ctx_b_stack[DEMO_STACK_SIZE];
 static UCHAR     thread_preempt_hi_stack[DEMO_STACK_SIZE];
@@ -234,30 +231,6 @@ static VOID preempt_lo_entry(ULONG thread_input)
     }
 }
 
-static VOID thread_led_entry(ULONG thread_input)
-{
-    (VOID)thread_input;
-    while (1)
-    {
-        printf("V5F ThreadX thread_led\r\n");
-        tx_thread_sleep(TX_TIMER_TICKS_PER_SECOND);
-    }
-}
-
-static VOID thread_tick_entry(ULONG thread_input)
-{
-    ULONG count = 0;
-
-    (VOID)thread_input;
-    while (1)
-    {
-        count++;
-        printf("V5F ThreadX ticks=%lu count=%lu ctx_pass=%lu preempt=%lu\r\n",
-               tx_time_get(), count, ctx_pass, preempt_hits);
-        tx_thread_sleep(TX_TIMER_TICKS_PER_SECOND * 2);
-    }
-}
-
 static VOID stack_error_handler(TX_THREAD *thread_ptr)
 {
     printf("V5F STACK overflow thread=%s\r\n",
@@ -289,14 +262,6 @@ VOID tx_application_define(VOID *first_unused_memory)
                      thread_preempt_lo_stack, DEMO_STACK_SIZE,
                      9, 9, TX_NO_TIME_SLICE, TX_AUTO_START);
 
-    tx_thread_create(&thread_led, "led", thread_led_entry, 0,
-                     thread_led_stack, DEMO_STACK_SIZE,
-                     8, 8, TX_NO_TIME_SLICE, TX_AUTO_START);
-
-    tx_thread_create(&thread_tick, "tick", thread_tick_entry, 0,
-                     thread_tick_stack, DEMO_STACK_SIZE,
-                     10, 10, TX_NO_TIME_SLICE, TX_AUTO_START);
-
     tx_demo_define();
 }
 
@@ -304,6 +269,14 @@ int main(void)
 {
     SystemAndCoreClockUpdate();
     USART_Printf_Init(460800);
+    printf("V5F RST pin=%u por=%u sft=%u iwdg=%u wwdg=%u lkup=%u\r\n",
+           (unsigned)RCC_GetFlagStatus(RCC_FLAG_PINRST),
+           (unsigned)RCC_GetFlagStatus(RCC_FLAG_PORRST),
+           (unsigned)RCC_GetFlagStatus(RCC_FLAG_SFTRST),
+           (unsigned)RCC_GetFlagStatus(RCC_FLAG_IWDGRST),
+           (unsigned)RCC_GetFlagStatus(RCC_FLAG_WWDGRST),
+           (unsigned)RCC_GetFlagStatus(RCC_FLAG_LKUPRSTF));
+    RCC_ClearFlag();
     printf("V5F ThreadX SystemCoreClk:%d HCLK:%d\r\n",
            SystemCoreClock, HCLKClock);
 
